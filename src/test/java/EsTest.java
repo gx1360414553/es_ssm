@@ -1,3 +1,4 @@
+import com.alibaba.fastjson.JSON;
 import com.gx.pojo.Item;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -60,10 +61,10 @@ public class EsTest {
             List<Item> list = new ArrayList<Item>();
             for (SearchHit hit:hits) {
                 Map tempSource = hit.getSourceAsMap();
+
                 System.out.println(tempSource);
 
-                Item item = new Item();
-                item.setId(Long.valueOf(tempSource.get("id") + ""));
+                Item item = JSON.parseObject(JSON.toJSONString(tempSource), Item.class);
 
                 //获取对应的高亮域
                 Map<String, HighlightField> highlightFields = hit.getHighlightFields();
