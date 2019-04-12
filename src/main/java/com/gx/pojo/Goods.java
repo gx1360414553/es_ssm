@@ -11,18 +11,20 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(indexName = "linayi", type = "item", shards = 1,replicas = 1)
-public class Item {
+@Document(indexName = "goods_ku", type = "goods", shards = 1,replicas = 1)
+public class Goods {
+
     @Field(type = FieldType.Long)
     @Id
-    Long id;
-    @Field(type = FieldType.Text, analyzer = "ik_max_word")
-    String title; //标题
-    String category;// 分类
-    @Field(type = FieldType.Keyword)
-    String brand; // 品牌
-    @Field(type = FieldType.Double)
-    Double price; // 价格
+    private Long id;
+    @Field(type = FieldType.Text)
+    private String name;
     @Field(type = FieldType.Auto, index = false)
-    String images; // 图片地址
+    private String Image;
+    @Field(type = FieldType.Keyword)
+    private String barnd;
+    @Field(type = FieldType.Keyword)
+    String category;// 分类
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
+    private String title;
 }
