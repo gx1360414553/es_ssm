@@ -19,7 +19,7 @@ public class Goods {
     private Long id;
     @Field(type = FieldType.Text)
     private String name;
-    @Field(type = FieldType.Auto, index = false)
+    @Field(type = FieldType.Keyword, index = false)
     private String Image;
     @Field(type = FieldType.Keyword)
     private String barnd;

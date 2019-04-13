@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:elasticsearch="http://www.springframework.org/schema/data/elasticsearch"
-       xsi:schemaLocation="http://www.springframework.org/schema/data/elasticsearch https://www.springframework.org/schema/data/elasticsearch/spring-elasticsearch.xsd
-		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
-    <!--ElasticsearchTemplate-->
-    <elasticsearch:repositories base-package="com.gx.repository"/>
+       xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-6.0.xsd">
 
-    <elasticsearch:transport-client id="client" cluster-nodes="192.168.229.128:9300" cluster-name="my-application" />
-
-    <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
-        <constructor-arg name="client" ref="client"/>
-    </bean>
+    <!--RestHighLevelClient-->
+<elasticsearch:rest-client id="esClient" esNodes="http://192.168.229.128:9200" />
 
 </beans>
-        <!--RestHighLevelClient-->
+
         <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
-       <!--xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
-       <!--xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"-->
-       <!--xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd-->
-		<!--http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-6.0.xsd">-->
+        <!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+               <!--xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+               <!--xmlns:elasticsearch="http://www.springframework.org/schema/data/elasticsearch"-->
+               <!--xsi:schemaLocation="http://www.springframework.org/schema/data/elasticsearch https://www.springframework.org/schema/data/elasticsearch/spring-elasticsearch.xsd-->
+		<!--http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">-->
+            <!--&lt;!&ndash;ElasticsearchTemplate&ndash;&gt;-->
+            <!--<elasticsearch:repositories base-package="com.gx.repository"/>-->
 
+            <!--<elasticsearch:transport-client id="client" cluster-nodes="192.168.229.128:9300" cluster-name="my-application" />-->
 
-<!--<elasticsearch:rest-client id="esClient" esNodes="http://192.168.229.128:9200" />-->
+            <!--<bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">-->
+                <!--<constructor-arg name="client" ref="client"/>-->
+            <!--</bean>-->
 
-<!--</beans>-->
-
+        <!--</beans>-->
