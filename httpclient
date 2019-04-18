@@ -1,0 +1,155 @@
+package com.linayi.util;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.springframework.web.multipart.MultipartFile;
+import sun.misc.BASE64Encoder;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class ImageUtil {
+
+    /**
+     * post请求（用于请求file传输）
+     *
+     * @param file    上传的图片数据
+     * @return
+     * @throws IOException
+     * @throws IllegalStateException
+     */
+    public static String handleUpload(MultipartFile file) throws Exception {
+        CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+        HttpPost httpPost = new HttpPost(PropertiesUtil.getValueByKey(ConstantUtil.IMAGE_UPLOAD_URL));// 创建httpPost
+        httpPost.setHeader("Accept", "application/octet-stream;charset=UTF-8");
+        httpPost.setHeader("Content-Type", "application/octet-stream;charset=UTF-8");
+        CloseableHttpResponse response = null;
+        if (file == null || "".equals(file.getOriginalFilename())){
+            return null;
+        }
+        String originalFileName = file.getOriginalFilename(); // 获取原始文件名
+        String type = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+
+        //设置请求头
+        httpPost.addHeader("fileType", type);
+        //设置请求体
+        List<NameValuePair> paramsList = new ArrayList<>();
+        paramsList.add(new BasicNameValuePair("type", type));
+        httpPost.setEntity(new UrlEncodedFormEntity(paramsList, "utf-8"));
+        httpPost.setEntity(new InputStreamEntity(file.getInputStream()));
+        String result = null;
+        try {
+            response = httpclient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            result = EntityUtils.toString(entity);
+        }
+        finally {
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 图片绝对路径转Base64String
+     * @param imgPath
+     * @return
+     */
+    public String getImageStrFromPath(String imgPath) throws IOException {
+        InputStream in = null;
+        byte[] data = null;
+       // ByteArrayOutputStream bos = null;
+        String metaType = "";
+        // 读取图片字节数组??
+        try {
+            String suffix = imgPath.substring(imgPath.lastIndexOf(".") + 1, imgPath.length());
+            if (suffix==null || imgPath == null) {
+                return null;
+            }
+
+            if (suffix.equalsIgnoreCase("jpg")||suffix.equalsIgnoreCase("jpeg")||suffix.equalsIgnoreCase("jpe")) {
+                metaType = "data:image/jpeg;base64,";
+            }else if (suffix.equalsIgnoreCase("gif")) {
+                metaType = "data:image/gif;base64,";
+            }else if (suffix.equalsIgnoreCase("bmp")) {
+                metaType = "data:image/bmp;base64,";
+            }else {
+                metaType = "data:image/jpeg;base64,";//默认解码方式，不合适
+            }
+            File file = new File(imgPath);
+            if (file.exists()){
+                in = new FileInputStream(file);
+                data = new byte[in.available()];
+                in.read(data);
+                // 对字节数组Base64编码??
+                BASE64Encoder encoder = new BASE64Encoder();
+                // 返回Base64编码过的字节数组字符串??
+                return metaType + encoder.encode(data);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (in != null){
+                in.close();
+            }
+
+        }
+       return null;
+    }
+
+    /**
+     * 处理图片全路径和请求request返回展示图片的请求
+     * @param image
+     * @param request
+     * @return
+     */
+    public String dealToShow(String image, HttpServletRequest request) {
+        StringBuffer requestURL = request.getRequestURL();
+
+        String url = requestURL.substring(0, getCharacterPosition(requestURL.toString(), "/", 4));
+        url = url + "/common/picture/showPicture.do?imagePath=" + image.replaceAll("/","*");
+        return url;
+    }
+
+    /**
+     * 图片服务器展示图片的请求
+     * @param image
+     * @return
+     */
+    public static String dealToShow(String image) {
+    	if (image == null || "".equals(image.trim())) {
+			return null;
+		}
+        return PropertiesUtil.getValueByKey(ConstantUtil.IMAGE_SERVER) + "/" + image;
+    }
+
+    /**
+     * 获取字符传中某字符第几次出现的位置
+     * @param string
+     * @param position 第几次出现的位置
+     * @param reg 匹配的字符
